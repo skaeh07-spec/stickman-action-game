@@ -29,8 +29,17 @@ public class PlayerController : MonoBehaviour
             isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         }
 
-        // 점프
+        // 키보드 점프 (테스트용)
         if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            Jump();
+        }
+    }
+
+    // 버튼에서도 호출할 수 있도록 public 함수로 분리
+    public void Jump()
+    {
+        if (isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
