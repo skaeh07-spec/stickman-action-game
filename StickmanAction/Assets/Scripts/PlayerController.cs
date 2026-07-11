@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded;
+    private float mobileMoveInput = 0f;
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
@@ -19,29 +20,36 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // 좌우 이동
-        float moveInput = Input.GetAxisRaw("Horizontal");
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+        // 키보드 입력 (PC 테스트용)
+        float keyboardInput = Input.GetAxisRaw("Horizontal");
 
-        // 바닥 체크
+        // 키보드나 모바일 버튼 중 입력 있는 쪽 사용
+        float finalInput = keyboardInput != 0 ? keyboardInput : mobileMoveInput;
+
+        rb.linearVelocity = new Vector2(finalInput * moveSpeed, rb.linearVelocity.y);
+
         if (groundCheck != null)
         {
             isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         }
 
-        // 키보드 점프 (테스트용)
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             Jump();
         }
     }
 
-    // 버튼에서도 호출할 수 있도록 public 함수로 분리
     public void Jump()
     {
         if (isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
+    }
+
+    // 버튼 누르고 있을 때 호출 (왼쪽: -1, 오른쪽: 1)
+    public void SetMoveInput(float direction)
+    {
+        mobileMoveInput = direction;
     }
 }
