@@ -84,7 +84,11 @@ public class PlayerController : MonoBehaviour
         foreach (Collider2D enemy in hitEnemies)
         {
             Debug.Log("적 타격: " + enemy.name);
-            // 나중에 여기서 enemy.GetComponent<Enemy>().TakeDamage(attackDamage); 형태로 연결
+            Enemy enemyScript = enemy.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.TakeDamage(attackDamage);
+            }
         }
     }
 
