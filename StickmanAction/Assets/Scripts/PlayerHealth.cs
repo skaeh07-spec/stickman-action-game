@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -9,9 +10,14 @@ public class PlayerHealth : MonoBehaviour
     public float invincibilityDuration = 1f;
     private bool isInvincible = false;
 
+    [Header("UI")]
+    public TextMeshProUGUI healthText;
+    public GameObject gameOverPanel;
+
     void Start()
     {
         currentHealth = maxHealth;
+        UpdateHealthUI();
     }
 
     public void TakeDamage(int damage)
@@ -19,7 +25,10 @@ public class PlayerHealth : MonoBehaviour
         if (isInvincible) return;
 
         currentHealth -= damage;
+        if (currentHealth < 0) currentHealth = 0;
+
         Debug.Log("Player 체력: " + currentHealth);
+        UpdateHealthUI();
 
         if (currentHealth <= 0)
         {
@@ -28,6 +37,14 @@ public class PlayerHealth : MonoBehaviour
         else
         {
             StartCoroutine(InvincibilityFrame());
+        }
+    }
+
+    void UpdateHealthUI()
+    {
+        if (healthText != null)
+        {
+            healthText.text = "Health: " + currentHealth;
         }
     }
 
@@ -41,6 +58,10 @@ public class PlayerHealth : MonoBehaviour
     void Die()
     {
         Debug.Log("Player 사망!");
-        // 나중에 게임오버 화면 연결
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+        Time.timeScale = 0f; // 게임 정지
     }
 }
