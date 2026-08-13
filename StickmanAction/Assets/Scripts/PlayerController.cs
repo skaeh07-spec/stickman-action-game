@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     private bool facingRight = true;
 
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private float groundCheckRadius = 0.2f;
+    [SerializeField] private float groundCheckRadius = 0.1f;
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Combat")]
@@ -19,6 +19,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float attackRange = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
     public int attackDamage = 1;
+    public float attackCooldown = 1f;
+    private float lastAttackTime = -999f;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip jumpSound;
+    public AudioClip attackSound;
 
     void Start()
     {
@@ -32,7 +39,6 @@ public class PlayerController : MonoBehaviour
 
         rb.linearVelocity = new Vector2(finalInput * moveSpeed, rb.linearVelocity.y);
 
-        // 캐릭터 좌우 방향 뒤집기
         if (finalInput > 0 && !facingRight) Flip();
         else if (finalInput < 0 && facingRight) Flip();
 
@@ -46,7 +52,6 @@ public class PlayerController : MonoBehaviour
             Jump();
         }
 
-        // 키보드 테스트용 공격 (J키)
         if (Input.GetKeyDown(KeyCode.J))
         {
             Attack();
@@ -58,6 +63,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            PlaySound(jumpSound);
         }
     }
 
@@ -74,10 +80,13 @@ public class PlayerController : MonoBehaviour
         transform.localScale = scale;
     }
 
-    // 공격 버튼에서 호출할 함수
     public void Attack()
     {
         if (attackPoint == null) return;
+        if (Time.time < lastAttackTime + attackCooldown) return;
+
+        lastAttackTime = Time.time;
+        PlaySound(attackSound);
 
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
 
@@ -92,7 +101,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // 씬 뷰에서 공격 범위 시각화 (디버그용)
+    void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
     void OnDrawGizmosSelected()
     {
         if (attackPoint == null) return;

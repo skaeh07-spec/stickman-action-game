@@ -14,6 +14,10 @@ public class PlayerHealth : MonoBehaviour
     public TextMeshProUGUI healthText;
     public GameObject gameOverPanel;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip hurtSound;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -28,6 +32,12 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth < 0) currentHealth = 0;
 
         Debug.Log("Player 체력: " + currentHealth);
+
+        if (audioSource != null && hurtSound != null)
+        {
+            audioSource.PlayOneShot(hurtSound);
+        }
+
         UpdateHealthUI();
 
         if (currentHealth <= 0)
@@ -62,6 +72,6 @@ public class PlayerHealth : MonoBehaviour
         {
             gameOverPanel.SetActive(true);
         }
-        Time.timeScale = 0f; // 게임 정지
+        Time.timeScale = 0f;
     }
 }
