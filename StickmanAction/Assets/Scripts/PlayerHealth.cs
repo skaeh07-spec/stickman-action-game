@@ -18,10 +18,19 @@ public class PlayerHealth : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip hurtSound;
 
+    [Header("Visual Feedback")]
+    public SpriteRenderer spriteRenderer;
+    public float flashInterval = 0.1f;
+
     void Start()
     {
         currentHealth = maxHealth;
         UpdateHealthUI();
+
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
     }
 
     public void TakeDamage(int damage)
@@ -61,7 +70,23 @@ public class PlayerHealth : MonoBehaviour
     System.Collections.IEnumerator InvincibilityFrame()
     {
         isInvincible = true;
-        yield return new WaitForSeconds(invincibilityDuration);
+
+        float elapsed = 0f;
+        while (elapsed < invincibilityDuration)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.enabled = !spriteRenderer.enabled;
+            }
+            yield return new WaitForSeconds(flashInterval);
+            elapsed += flashInterval;
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = true;
+        }
+
         isInvincible = false;
     }
 
