@@ -57,4 +57,19 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
+
+    public void NextLevel()
+    {
+        Time.timeScale = 1f;
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene == "Level1")
+        {
+            SceneManager.LoadScene("Level2");
+        }
+        else if (currentScene == "Level2")
+        {
+            SceneManager.LoadScene("EndingScene");
+        }
+    }
 }
