@@ -22,6 +22,10 @@ public class PlayerHealth : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public float flashInterval = 0.1f;
 
+    [Header("Checkpoint")]
+    private Vector3 respawnPoint;
+    private Rigidbody2D rb;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -31,6 +35,15 @@ public class PlayerHealth : MonoBehaviour
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
+
+        rb = GetComponent<Rigidbody2D>();
+        respawnPoint = transform.position;
+    }
+
+    public void SetCheckpoint(Vector3 position)
+    {
+        respawnPoint = position;
+        Debug.Log("체크포인트 저장: " + position);
     }
 
     public void TakeDamage(int damage)
@@ -56,6 +69,32 @@ public class PlayerHealth : MonoBehaviour
         else
         {
             StartCoroutine(InvincibilityFrame());
+        }
+    }
+
+    // 구덩이 낙사 전용: 체력 1만 깎고 체크포인트로 리스폰
+    public void FallDeath()
+    {
+        if (isInvincible) return;
+
+        currentHealth -= 1;
+        if (currentHealth < 0) currentHealth = 0;
+
+        Debug.Log("낙사! 남은 체력: " + currentHealth);
+        UpdateHealthUI();
+
+        if (audioSource != null && hurtSound != null)
+        {
+            audioSource.PlayOneShot(hurtSound);
+        }
+
+        if (currentHealth <= 0)
+        {
+            GameOver();
+        }
+        else
+        {
+            Respawn();
         }
     }
 
@@ -92,7 +131,24 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Player 사망!");
+        Debug.Log("Player 사망! 체력이 0이 됨");
+        GameOver();
+    }
+
+    void Respawn()
+    {
+        transform.position = respawnPoint;
+        UpdateHealthUI();
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+    }
+
+    void GameOver()
+    {
+        Debug.Log("게임 오버!");
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public GameObject clearPanel;
 
     private int killCount = 0;
+    private bool gameEnded = false;
 
     void Awake()
     {
@@ -39,11 +40,17 @@ public class GameManager : MonoBehaviour
     public void StageClear()
     {
         Debug.Log("스테이지 클리어!");
+        gameEnded = true;
         if (clearPanel != null)
         {
             clearPanel.SetActive(true);
         }
         Time.timeScale = 0f;
+    }
+
+    public bool IsGameEnded()
+    {
+        return gameEnded;
     }
 
     public void RestartLevel()

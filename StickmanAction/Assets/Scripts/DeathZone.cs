@@ -9,7 +9,7 @@ public class DeathZone : MonoBehaviour
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(999); // 즉사
+                playerHealth.FallDeath();
             }
         }
     }
